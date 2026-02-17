@@ -51,6 +51,26 @@ header p{font-size: 0.8rem; opacity:.8}
     object-fit:contain;
 }
 
+/* NEW BUTTON */
+#showFullDataBtn{
+    position:absolute;
+    right:30px;
+    top:50%;
+    transform:translateY(-50%);
+    padding:8px 12px;
+    background:#22c55e;
+    color:#0f172a;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+    font-size:0.85rem;
+    box-shadow:var(--shadow);
+}
+#showFullDataBtn:hover{
+    background:#16a34a;
+}
+
 .search-wrapper{
     max-width:500px;
     margin: 15px auto;
@@ -153,6 +173,18 @@ header p{font-size: 0.8rem; opacity:.8}
     color:#22c55e;
 }
 
+footer{
+    position:fixed;
+    bottom:0;
+    width:100%;
+    text-align:center;
+    padding:8px 0;
+    background:#1e293b;
+    color:var(--muted);
+    font-size:0.75rem;
+    box-shadow:var(--shadow);
+}
+
 @media(max-width:1000px){
     body { overflow-y: auto; height: auto; }
     .container { height: auto; flex-wrap: nowrap; align-content: stretch; }
@@ -167,6 +199,7 @@ header p{font-size: 0.8rem; opacity:.8}
     <img src="orcp.bmp" class="logo" alt="ORCP Logo">
     <h1>JAFFURAH - S019 ARAMCO ID DETAILS</h1>
     <p>PROFESSIONAL PERSONNEL DATABASE</p>
+    <button id="showFullDataBtn">SHOW FULL DATA</button>
 </header>
 
 <div class="search-wrapper">
@@ -177,7 +210,11 @@ header p{font-size: 0.8rem; opacity:.8}
 <div id="statusMsg">Connecting to Database...</div>
 
 <div class="container" id="infoContainer">
-    </div>
+</div>
+
+<footer>
+    Created by MOHAMMAD JAVED SHAIKH (603660)
+</footer>
 
 <script>
 const FILE_URL='S019-ARAMCO ID LOG.xlsx';
@@ -300,7 +337,6 @@ function renderDetails(person){
         ["Expiry Date","PP-EXPIRY DATE"]
     ]);
 
-    // ARAMCO ID SECTION WITH REMAINING DAYS
     createSection("Aramco ID Details",[
         ["Badge no","BADGE NO."],
         ["GP Apply Date","REQ DATE"],
@@ -313,9 +349,8 @@ function renderDetails(person){
         ["ID Location","CARD WITH"]
     ]);
 
-    // Calculate remaining days from today
     const cards=document.querySelectorAll('.section-box');
-    const lastSection=cards[cards.length-1]; // Aramco ID section
+    const lastSection=cards[cards.length-1];
     const infoCards=lastSection.querySelectorAll('.info-card');
     infoCards.forEach(card=>{
         const labelEl=card.querySelector('.label');
@@ -335,6 +370,42 @@ function renderDetails(person){
         }
     });
 }
+
+// SHOW FULL DATA PAGE
+document.getElementById('showFullDataBtn').addEventListener('click',()=>{
+    const win=window.open("", "_blank");
+    win.document.write(`<html><head><title>Full Data</title>
+    <style>
+        body{font-family:'Poppins',sans-serif; background:#0f172a; color:#e2e8f0; padding:20px;}
+        table{border-collapse:collapse; width:100%;}
+        th, td{border:1px solid #334155; padding:6px 10px; text-align:left;}
+        th{background:#2563eb; color:#fff;}
+        tr:nth-child(even){background:#1e293b;}
+    </style>
+    </head><body>
+    <h2>FULL ARAMCO ID LOG DATA</h2>
+    <table>
+        <thead>
+            <tr>`);
+
+    if(database.length>0){
+        const headers=Object.keys(database[0]);
+        headers.forEach(h=>{
+            win.document.write(`<th>${h}</th>`);
+        });
+        win.document.write(`</tr></thead><tbody>`);
+        database.forEach(row=>{
+            win.document.write(`<tr>`);
+            headers.forEach(h=>{
+                win.document.write(`<td>${row[h]}</td>`);
+            });
+            win.document.write(`</tr>`);
+        });
+        win.document.write(`</tbody>`);
+    }
+
+    win.document.write(`</table></body></html>`);
+});
 
 window.onload=loadExcel;
 
