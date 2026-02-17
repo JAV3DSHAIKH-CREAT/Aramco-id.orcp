@@ -309,11 +309,11 @@ function renderDetails(person){
         ["ID office","ID OFFICE"],
         ["Issue Date","CARD ISSUE DATE"],
         ["Expiry Date","CARD EXPIRY DATE"],
-        ["Remaining Days","CARD EXPIRY DATE"], // We will calculate remaining days
+        ["Remaining Days","CARD EXPIRY DATE"],
         ["ID Location","CARD WITH"]
     ]);
 
-    // Update remaining days dynamically
+    // Calculate remaining days from today
     const cards=document.querySelectorAll('.section-box');
     const lastSection=cards[cards.length-1]; // Aramco ID section
     const infoCards=lastSection.querySelectorAll('.info-card');
@@ -321,16 +321,17 @@ function renderDetails(person){
         const labelEl=card.querySelector('.label');
         if(labelEl.innerText==="Remaining Days"){
             const valueEl=card.querySelector('.value');
-            const expDate=person["CARD EXPIRY DATE"];
+            const issueNum=person["CARD ISSUE DATE"];
+            const expNum=person["CARD EXPIRY DATE"];
             let remaining="N/A";
-            if(typeof expDate==='number'){
-                const dateExp=new Date((expDate-25569)*86400000);
+            if(typeof issueNum==='number' && typeof expNum==='number'){
+                const dateExp=new Date((expNum-25569)*86400000);
                 const today=new Date();
                 remaining=Math.ceil((dateExp-today)/(1000*60*60*24));
                 if(remaining<0) remaining=0;
             }
-            valueEl.innerText=remaining;
-            valueEl.style.color="#f87171"; // red for emphasis
+            valueEl.innerText=remaining + " Days";
+            valueEl.style.color="#f87171";
         }
     });
 }
