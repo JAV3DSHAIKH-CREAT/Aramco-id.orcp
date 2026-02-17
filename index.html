@@ -97,13 +97,24 @@ margin:auto;
 padding:0 20px 80px;
 }
 
-.section-box{
-background:var(--card-bg);
-margin-bottom:30px;
-padding:25px;
-border-radius:20px;
-box-shadow:var(--shadow);
-border:1px solid #334155;
+/* Make infoContainer horizontal scrollable */
+#infoContainer {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+}
+
+/* Section boxes fixed width for dashboard style */
+.section-box {
+    min-width: 300px; /* adjust as needed */
+    flex: 0 0 auto;
+    background: var(--card-bg);
+    margin-bottom: 30px;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    border:1px solid #334155;
 }
 
 .section-box h3{
@@ -118,14 +129,14 @@ letter-spacing:0.5px;
 
 .section-grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
-gap:15px;
+grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+gap:10px;
 }
 
 .info-card{
 background:#0f172a;
-padding:15px;
-border-radius:15px;
+padding:10px;
+border-radius:10px;
 border:1px solid #334155;
 }
 
@@ -137,7 +148,7 @@ font-weight:600;
 }
 
 .value{
-font-size:.95rem;
+font-size:.85rem;
 margin-top:5px;
 font-weight:500;
 }
@@ -149,7 +160,17 @@ font-size:.9rem;
 color:var(--muted);
 }
 
+/* Scrollbar style for horizontal scroll */
+#infoContainer::-webkit-scrollbar {
+    height: 8px;
+}
+#infoContainer::-webkit-scrollbar-thumb {
+    background: #2563eb;
+    border-radius: 4px;
+}
+
 @media(max-width:600px){
+.section-box{min-width:250px}
 .section-grid{grid-template-columns:1fr}
 }
 </style>
@@ -294,7 +315,7 @@ createSection("Passport Information",[
 ["Expiry Date","PP-EXPIRY DATE"]
 ]);
 
-// ✅ New Aramco ID Information Section
+// ✅ Aramco ID Information
 createSection("Aramco ID Information",[
 ["Badge no","BADGE NO."],
 ["GP apply date","GP APPLY DATE"],
