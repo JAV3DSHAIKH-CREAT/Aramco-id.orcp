@@ -51,6 +51,23 @@ header p{font-size: 0.8rem; opacity:.8}
     object-fit:contain;
 }
 
+/* ✅ LAST UPDATED BADGE */
+#lastUpdatedBadge{
+    position:absolute;
+    left:110px;
+    top:50%;
+    transform:translateY(-50%);
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    padding:6px 14px;
+    border-radius:30px;
+    font-size:0.75rem;
+    font-weight:600;
+    color:#ffffff;
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+    letter-spacing:0.5px;
+    white-space:nowrap;
+}
+
 #showFullDataBtn{
     position:absolute;
     right:30px;
@@ -66,7 +83,9 @@ header p{font-size: 0.8rem; opacity:.8}
     font-size:0.85rem;
     box-shadow:var(--shadow);
 }
-#showFullDataBtn:hover{ background:#16a34a; }
+#showFullDataBtn:hover{
+    background:#16a34a;
+}
 
 .search-wrapper{
     max-width:500px;
@@ -103,7 +122,7 @@ header p{font-size: 0.8rem; opacity:.8}
     padding:10px 20px;
     cursor:pointer;
     border-bottom:1px solid #334155;
-    font-size:0.9rem;
+    font-size: 0.9rem;
 }
 .suggestion-item:hover{ background:#2563eb; }
 
@@ -154,7 +173,7 @@ header p{font-size: 0.8rem; opacity:.8}
     font-size:0.6rem;
     color:var(--muted);
     text-transform:uppercase;
-    display:block;
+    display: block;
 }
 
 .value{
@@ -182,35 +201,6 @@ footer{
     box-shadow:var(--shadow);
 }
 
-/* Bottom Left Update Indicator */
-.update-indicator{
-    position:fixed;
-    bottom:10px;
-    left:15px;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-size:0.75rem;
-    background:#1e293b;
-    padding:6px 12px;
-    border-radius:20px;
-    box-shadow:var(--shadow);
-    border:1px solid #334155;
-}
-
-.green-dot{
-    width:10px;
-    height:10px;
-    background:#22c55e;
-    border-radius:50%;
-    box-shadow:0 0 8px #22c55e;
-}
-
-#lastUpdated{
-    color:#22c55e;
-    font-weight:500;
-}
-
 @media(max-width:1000px){
     body { overflow-y: auto; height: auto; }
     .container { height: auto; flex-wrap: nowrap; align-content: stretch; }
@@ -223,6 +213,7 @@ footer{
 
 <header>
     <img src="orcp.bmp" class="logo" alt="ORCP Logo">
+    <div id="lastUpdatedBadge">Last Updated: Loading...</div>
     <h1>JAFFURAH - S019 ARAMCO ID DETAILS</h1>
     <p>PROFESSIONAL PERSONNEL DATABASE</p>
     <button id="showFullDataBtn">SHOW FULL DATA</button>
@@ -234,17 +225,12 @@ footer{
 </div>
 
 <div id="statusMsg">Connecting to Database...</div>
+
 <div class="container" id="infoContainer"></div>
 
 <footer>
     Created by MOHAMMAD JAVED SHAIKH (603660)
 </footer>
-
-<!-- Bottom Left Green Signal -->
-<div class="update-indicator">
-    <div class="green-dot"></div>
-    <div id="lastUpdated">Checking update...</div>
-</div>
 
 <script>
 const FILE_URL='S019-ARAMCO ID LOG.xlsx';
@@ -252,8 +238,25 @@ let database=[];
 
 async function loadExcel(){
     const status=document.getElementById('statusMsg');
+    const badge=document.getElementById('lastUpdatedBadge');
+
     try{
         const response=await fetch(FILE_URL);
+
+        // ✅ GET LAST UPDATED DATE FROM GITHUB
+        const lastModified=response.headers.get("Last-Modified");
+        if(lastModified){
+            const dateObj=new Date(lastModified);
+            const formatted=dateObj.toLocaleDateString('en-GB',{
+                day:'2-digit',
+                month:'short',
+                year:'numeric'
+            });
+            badge.innerHTML="Last Updated: "+formatted;
+        }else{
+            badge.innerHTML="Last Updated: Not Available";
+        }
+
         const arrayBuffer=await response.arrayBuffer();
         const workbook=XLSX.read(arrayBuffer,{type:'array'});
         const sheet=workbook.Sheets["ARAMCO ID LOG - S019"];
@@ -270,34 +273,180 @@ async function loadExcel(){
         status.innerHTML="✅ Data Loaded: "+database.length+" Records Found";
 
     }catch(err){
-        status.innerHTML="❌ Error: Ensure Excel file is in same folder";
+        status.innerHTML="❌ Error: Ensure Excel file is in the same folder";
+        badge.innerHTML="Last Updated: Error";
+        console.error(err);
     }
 }
 
-async function getLastModified(){
-    try{
-        const response = await fetch(FILE_URL, { method: 'HEAD' });
-        const lastModified = response.headers.get('Last-Modified');
+const searchInput=document.getElementById('mainSearch');
+const suggestBox=document.getElementById('suggestions');
 
-        if(lastModified){
-            const date = new Date(lastModified);
-            const formatted = date.toLocaleString('en-GB');
-            document.getElementById('lastUpdated').innerText =
-                "Last Updated: " + formatted;
-        }else{
-            document.getElementById('lastUpdated').innerText =
-                "Last Updated: Not Available";
+searchInput.addEventListener('input',(e)=>{
+    const query=e.target.value.toLowerCase().trim();
+    suggestBox.innerHTML='';
+    if(query.length<1){suggestBox.style.display='none';return;}
+
+    const matches=database.filter(item=>
+        String(item['FILE NO.']||"").toLowerCase().includes(query)
+    ).slice(0,8);
+
+    if(matches.length>0){
+        suggestBox.style.display='block';
+        matches.forEach(item=>{
+            const div=document.createElement('div');
+            div.className='suggestion-item';
+            div.innerText=item['FILE NO.'] + " - " + (item['NAME'] || "");
+            div.onclick=()=>renderDetails(item);
+            suggestBox.appendChild(div);
+        });
+    }else{
+        suggestBox.style.display='none';
+    }
+});
+
+function renderDetails(person){
+    searchInput.value=person['FILE NO.'];
+    suggestBox.style.display='none';
+    const container=document.getElementById('infoContainer');
+    container.innerHTML='';
+
+    function createSection(title,fields){
+        let section=document.createElement('div');
+        section.className='section-box';
+        let html=`<h3>${title}</h3><div class="section-grid">`;
+
+        fields.forEach(([label,key])=>{
+            let value=person[key]||"N/A";
+            let extraStyle="";
+
+            if(label==="Gate Pass Status" && value.toString().toUpperCase()==="IN PROCESS"){
+                extraStyle="color:#eab308;";
+            } else if(label==="Gate Pass Status"){
+                extraStyle="color:#22c55e;";
+            }
+
+            if(label.toLowerCase().includes('date') && typeof value==='number'){
+                value=new Date((value-25569)*86400000).toLocaleDateString('en-GB');
+            }
+
+            html+=`
+            <div class="info-card">
+                <span class="label">${label}</span>
+                <span class="value" style="${extraStyle}">${value}</span>
+            </div>`;
+        });
+
+        html+=`</div>`;
+        section.innerHTML=html;
+        container.appendChild(section);
+    }
+
+    createSection("Company Info",[
+        ["File No.","FILE NO."],
+        ["Company","COMPANY"],
+        ["Designation","DESIGNATION"],
+        ["Gate Pass Status","GATE PASS STATUS"]
+    ]);
+
+    createSection("Personal Info",[
+        ["Name","NAME"],
+        ["DOB","DATE OF BIRTH"],
+        ["Blood Type","BLOOD TYPE"],
+        ["Nationality","NATIONALITY"],
+        ["Religion","RELIGION"],
+        ["Gender","GENDER"]
+    ]);
+
+    createSection("Iqama Info",[
+        ["Iqama Number","IQAMA NO."],
+        ["Issue Date","ISSUE DATE"],
+        ["Expiry Date","EXPIRY DATE"]
+    ]);
+
+    createSection("Passport Info",[
+        ["Passport Number","PASSPORT NO"],
+        ["Place of Issue","PLACE OF ISSUE"],
+        ["Issue Date","PP-ISSUE DATE"],
+        ["Expiry Date","PP-EXPIRY DATE"]
+    ]);
+
+    createSection("Aramco ID Details",[
+        ["Badge no","BADGE NO."],
+        ["GP Apply Date","REQ DATE"],
+        ["SA Req No.","SA REQ NO."],
+        ["Appt Date","APP DATE"],
+        ["ID office","ID OFFICE"],
+        ["Issue Date","CARD ISSUE DATE"],
+        ["Expiry Date","CARD EXPIRY DATE"],
+        ["Remaining Days","REMAINING DAYS"],
+        ["ID Location","CARD WITH"]
+    ]);
+
+    const cards=document.querySelectorAll('.section-box');
+    const lastSection=cards[cards.length-1];
+    const infoCards=lastSection.querySelectorAll('.info-card');
+    infoCards.forEach(card=>{
+        const labelEl=card.querySelector('.label');
+        if(labelEl.innerText==="Remaining Days"){
+            const valueEl=card.querySelector('.value');
+            const expNum=person["CARD EXPIRY DATE"];
+            let remaining="N/A";
+            if(typeof expNum==='number'){
+                const dateExp=new Date((expNum-25569)*86400000);
+                const today=new Date();
+                remaining=Math.ceil((dateExp-today)/(1000*60*60*24));
+                if(remaining<0) remaining=0;
+            }
+            valueEl.innerText=remaining + " Days";
+            valueEl.style.color=remaining <=50 ? "#f87171" : "#22c55e";
         }
-    }catch(err){
-        document.getElementById('lastUpdated').innerText =
-            "Update Info Error";
-    }
+    });
 }
 
-window.onload = () => {
-    loadExcel();
-    getLastModified();
-};
+document.getElementById('showFullDataBtn').addEventListener('click',()=>{
+    const win=window.open("", "_blank");
+    win.document.write(`<html><head><title>Full Data</title>
+    <style>
+        body{font-family:'Poppins',sans-serif; background:#0f172a; color:#e2e8f0; padding:20px;}
+        .table-container{max-height:90vh; overflow:auto; border:1px solid #334155;}
+        table{border-collapse:collapse; width:100%;}
+        th, td{border:1px solid #334155; padding:6px 10px; text-align:left; white-space:nowrap;}
+        th{background:#2563eb; color:#fff; position:sticky; top:0; z-index:2;}
+        tr:nth-child(even){background:#1e293b;}
+    </style>
+    </head><body>
+    <h2>FULL ARAMCO ID LOG DATA</h2>
+    <div class="table-container"><table>
+        <thead>
+            <tr>`);
+
+    if(database.length>0){
+        const headers=Object.keys(database[0]);
+        headers.forEach(h=>{
+            win.document.write(`<th>${h}</th>`);
+        });
+        win.document.write(`</tr></thead><tbody>`);
+        database.forEach(row=>{
+            win.document.write(`<tr>`);
+            headers.forEach(h=>{
+                win.document.write(`<td>${row[h]}</td>`);
+            });
+            win.document.write(`</tr>`);
+        });
+        win.document.write(`</tbody>`);
+    }
+
+    win.document.write(`</table></div></body></html>`);
+});
+
+window.onload=loadExcel;
+
+window.addEventListener('click',(e)=>{
+    if(!e.target.closest('.search-wrapper')){
+        document.getElementById('suggestions').style.display='none';
+    }
+});
 </script>
 
 </body>
