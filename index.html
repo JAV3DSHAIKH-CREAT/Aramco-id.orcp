@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S019 - ARAMCO ID LOG Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #004d40 0%, #00796b 100%);
+            --accent-color: #00bfa5;
+            --bg-color: #f4f7f6;
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        /* Header Section */
+        header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+
+        header h1 { font-weight: 600; letter-spacing: 1px; }
+        header p { opacity: 0.9; font-size: 0.9rem; margin-top: 5px; }
+
+        /* Search Container */
+        .search-container {
+            max-width: 700px;
+            margin: -30px auto 40px;
+            padding: 0 20px;
+            position: relative;
+        }
+
+        #mainSearch {
+            width: 100%;
+            padding: 20px 25px;
+            border-radius: 50px;
+            border: none;
+            box-shadow: var(--shadow);
+            font-size: 1.1rem;
+            outline: none;
+            transition: transform 0.3s ease;
+        }
+
+        #mainSearch:focus { transform: scale(1.02); }
+
+        /* Suggestions Dropdown */
+        .suggestions {
+            position: absolute;
+            top: 70px;
+            left: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+
+        .suggestion-item:hover { background: #f0fdfa; color: var(--accent-color); }
+        .suggestion-item:last-child { border-bottom: none; }
+
+        /* Dashboard Grid */
+        .dashboard {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .dashboard.visible { opacity: 1; transform: translateY(0); }
+
+        /* Info Cards */
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-left: 5px solid var(--accent-color);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover { transform: translateY(-5px); }
+
+        .card-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #95a5a6;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .card-value {
+            font-size: 1.05rem;
+            color: var(--text-main);
+            font-weight: 500;
+        }
+
+        /* Status Badge */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            background: #e0f2f1;
+            color: #00796b;
+        }
+
+        .loader {
+            text-align: center;
+            margin: 20px;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+
+        @media (max-width: 600px) {
+            .dashboard { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>S019 ARAMCO ID LOG</h1>
+    <p>Personnel Information Retrieval System</p>
+</header>
+
+<div class="search-container">
+    <input type="text" id="mainSearch" placeholder="Search by Employee Name..." autocomplete="off">
+    <div id="suggestionBox" class="suggestions"></div>
+</div>
+
+<div id="loader" class="loader">Loading Database...</div>
+
+<div class="dashboard" id="dashboard">
+    </div>
+
+<script>
+    let dbData = [];
+    const searchInput = document.getElementById('mainSearch');
+    const suggestionBox = document.getElementById('suggestionBox');
+    const dashboard = document.getElementById('dashboard');
+    const loader = document.getElementById('loader');
+
+    // CONFIGURATION
+    const FILE_NAME = 'S019-ARAMCO ID LOG.xlsx';
+
+    // 1. Fetch and Parse Excel
+    async function initDatabase() {
+        try {
+            const response = await fetch(FILE_NAME);
+            const arrayBuffer = await response.arrayBuffer();
+            const data = new Uint8Array(arrayBuffer);
+            const workbook = XLSX.read(data, { type: 'array' });
+            
+            // Get first sheet
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            
+            // Convert to JSON
+            dbData = XLSX.utils.sheet_to_json(worksheet);
+            loader.innerText = "Database Connected (" + dbData.length + " Records)";
+            console.log("Data Loaded Successfully");
+        } catch (error) {
+            loader.innerHTML = "<span style='color:red'>Error loading Excel file. Ensure file name matches exactly.</span>";
+            console.error(error);
+        }
+    }
+
+    // 2. Search Logic
+    searchInput.addEventListener('input', (e) => {
+        const val = e.target.value.toLowerCase();
+        suggestionBox.innerHTML = '';
+        
+        if (val.length < 1) {
+            suggestionBox.style.display = 'none';
+            return;
+        }
+
+        const filtered = dbData.filter(row => 
+            String(row['NAME']).toLowerCase().includes(val)
+        ).slice(0, 10); // Limit to 10 suggestions for performance
+
+        if (filtered.length > 0) {
+            suggestionBox.style.display = 'block';
+            filtered.forEach(row => {
+                const div = document.createElement('div');
+                div.className = 'suggestion-item';
+                // Display: COMPANY - NAME
+                div.innerText = `${row['COMPANY']} - ${row['NAME']}`;
+                div.onclick = () => selectUser(row);
+                suggestionBox.appendChild(div);
+            });
+        } else {
+            suggestionBox.style.display = 'none';
+        }
+    });
+
+    // 3. Display Data
+    function selectUser(row) {
+        searchInput.value = row['NAME'];
+        suggestionBox.style.display = 'none';
+        
+        dashboard.innerHTML = '';
+        dashboard.classList.add('visible');
+
+        // Mapping Keys to Labels
+        const fields = [
+            { label: 'Company', key: 'COMPANY' },
+            { label: 'Full Name', key: 'NAME' },
+            { label: 'Designation', key: 'DESIGNATION' },
+            { label: 'Iqama Number', key: 'IQAMA NO.' },
+            { label: 'Iqama Issue Date', key: 'ISSUE DATE' },
+            { label: 'Iqama Expiry Date', key: 'EXPIRY DATE' },
+            { label: 'Date of Birth', key: 'DATE OF BIRTH' },
+            { label: 'Blood Type', key: 'BLOOD TYPE' },
+            { label: 'Nationality', key: 'NATIONALITY' },
+            { label: 'Religion', key: 'RELIGION' },
+            { label: 'Gender', key: 'GENDER' },
+            { label: 'Passport Number', key: 'PASSPORT NUMBER' },
+            { label: 'Place of Issue', key: 'PLACE OF ISSUE' },
+            { label: 'Passport Issue', key: 'ISSUE DATE (Passport)' },
+            { label: 'Passport Expiry', key: 'EXPIRY DATE (Passport)' },
+            { label: 'Gate Pass Status', key: 'GATE PASS STATUS' }
+        ];
+
+        fields.forEach(field => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            let val = row[field.key] || 'N/A';
+            
+            // Basic check for Excel serial dates
+            if (field.label.includes('Date') && typeof val === 'number') {
+                val = new Date((val - 25569) * 86400 * 1000).toLocaleDateString();
+            }
+
+            card.innerHTML = `
+                <span class="card-label">${field.label}</span>
+                <span class="card-value">${field.key === 'GATE PASS STATUS' ? `<span class="badge">${val}</span>` : val}</span>
+            `;
+            dashboard.appendChild(card);
+        });
+    }
+
+    // Initialize on load
+    window.onload = initDatabase;
+
+    // Close suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+        if (e.target !== searchInput) suggestionBox.style.display = 'none';
+    });
+</script>
+
+</body>
+</html>
