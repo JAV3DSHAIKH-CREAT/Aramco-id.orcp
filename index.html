@@ -41,10 +41,11 @@ header p{opacity:.8}
 /* LOGO STYLE */
 .logo{
 position:absolute;
-top:25px;
-right:40px;
-width:192px;   /* 2 inches */
-height:192px;  /* 2 inches */
+left:40px;          /* Move to left */
+top:50%;            /* Move to vertical center */
+transform:translateY(-50%);  /* Perfect vertical centering */
+width:192px;        /* 2 inches */
+height:192px;       /* 2 inches */
 object-fit:contain;
 }
 
@@ -307,3 +308,4 @@ suggestBox.style.display='none';
 
 </body>
 </html>
+
