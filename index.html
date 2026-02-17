@@ -243,16 +243,21 @@ async function loadExcel(){
     try{
         const response=await fetch(FILE_URL);
 
-        // ✅ GET LAST UPDATED DATE FROM GITHUB
+        // ✅ GET LAST UPDATED DATE & TIME FROM GITHUB
         const lastModified=response.headers.get("Last-Modified");
         if(lastModified){
             const dateObj=new Date(lastModified);
-            const formatted=dateObj.toLocaleDateString('en-GB',{
+            const formattedDate=dateObj.toLocaleDateString('en-GB',{
                 day:'2-digit',
                 month:'short',
                 year:'numeric'
             });
-            badge.innerHTML="Last Updated: "+formatted;
+            const formattedTime=dateObj.toLocaleTimeString('en-GB',{
+                hour:'2-digit',
+                minute:'2-digit',
+                second:'2-digit'
+            });
+            badge.innerHTML=`Last Updated: ${formattedDate} ${formattedTime}`;
         }else{
             badge.innerHTML="Last Updated: Not Available";
         }
