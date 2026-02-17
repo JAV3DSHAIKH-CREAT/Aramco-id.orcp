@@ -349,6 +349,7 @@ function renderDetails(person){
         ["ID Location","CARD WITH"]
     ]);
 
+    // CALCULATE REMAINING DAYS FROM EXPIRY DATE ONLY
     const cards=document.querySelectorAll('.section-box');
     const lastSection=cards[cards.length-1];
     const infoCards=lastSection.querySelectorAll('.info-card');
@@ -356,17 +357,16 @@ function renderDetails(person){
         const labelEl=card.querySelector('.label');
         if(labelEl.innerText==="Remaining Days"){
             const valueEl=card.querySelector('.value');
-            const issueNum=person["CARD ISSUE DATE"];
             const expNum=person["CARD EXPIRY DATE"];
             let remaining="N/A";
-            if(typeof issueNum==='number' && typeof expNum==='number'){
+            if(typeof expNum==='number'){
                 const dateExp=new Date((expNum-25569)*86400000);
                 const today=new Date();
                 remaining=Math.ceil((dateExp-today)/(1000*60*60*24));
                 if(remaining<0) remaining=0;
             }
             valueEl.innerText=remaining + " Days";
-            valueEl.style.color="#f87171";
+            valueEl.style.color=remaining <=30 ? "#f87171" : "#22c55e";
         }
     });
 }
