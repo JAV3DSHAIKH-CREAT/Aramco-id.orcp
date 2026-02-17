@@ -1,263 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S019 - ARAMCO ID LOG Dashboard</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
-    
-    <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #004d40 0%, #00796b 100%);
-            --accent: #00bfa5;
-            --bg: #f0f2f5;
-            --card-bg: #ffffff;
-            --text-dark: #2d3436;
-            --text-light: #636e72;
-            --shadow: 0 10px 30px rgba(0,0,0,0.08);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S019 - ARAMCO ID LOG Dashboard</title>
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text-dark); overflow-x: hidden; }
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
 
-        /* Header Layout */
-        header {
-            background: var(--primary-gradient);
-            color: white;
-            padding: 60px 20px 80px;
-            text-align: center;
-            border-bottom-left-radius: 50px;
-            border-bottom-right-radius: 50px;
-        }
-        header h1 { font-size: 2.2rem; font-weight: 600; margin-bottom: 10px; }
-        header p { opacity: 0.8; font-weight: 300; letter-spacing: 1px; }
+<style>
+:root{
+--primary-gradient:linear-gradient(135deg,#004d40 0%,#00796b 100%);
+--accent:#00bfa5;
+--bg:#f0f2f5;
+--card-bg:#ffffff;
+--text-dark:#2d3436;
+--text-light:#636e72;
+--shadow:0 10px 30px rgba(0,0,0,0.08);
+}
 
-        /* Search Section */
-        .search-wrapper {
-            max-width: 600px;
-            margin: -40px auto 40px;
-            padding: 0 20px;
-            position: relative;
-        }
-        #mainSearch {
-            width: 100%;
-            padding: 22px 30px;
-            border-radius: 100px;
-            border: none;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-            font-size: 1.1rem;
-            outline: none;
-            transition: 0.3s;
-        }
-        #mainSearch:focus { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text-dark)}
 
-        /* Suggestion List */
-        .suggestions {
-            position: absolute;
-            top: 80px; left: 30px; right: 30px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: var(--shadow);
-            max-height: 350px;
-            overflow-y: auto;
-            z-index: 9999;
-            display: none;
-            border: 1px solid #eee;
-        }
-        .suggestion-item {
-            padding: 15px 25px;
-            cursor: pointer;
-            border-bottom: 1px solid #f9f9f9;
-            transition: all 0.2s;
-            display: flex;
-            flex-direction: column;
-        }
-        .suggestion-item:hover { background: #e0f2f1; }
-        .suggestion-item .comp { font-size: 0.75rem; color: var(--accent); font-weight: 600; text-transform: uppercase; }
-        .suggestion-item .name { font-size: 1rem; color: var(--text-dark); }
+header{
+background:var(--primary-gradient);
+color:white;
+padding:60px 20px 80px;
+text-align:center;
+border-bottom-left-radius:50px;
+border-bottom-right-radius:50px;
+}
+header h1{font-size:2rem;font-weight:600}
+header p{opacity:.8}
 
-        /* Dashboard Grid */
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px 100px; }
-        .grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
-            gap: 20px; 
-            display: none; /* Hidden until data selected */
-        }
-        
-        /* Information Cards */
-        .info-card {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 18px;
-            box-shadow: var(--shadow);
-            border-top: 4px solid var(--accent);
-            transition: 0.3s;
-            animation: fadeIn 0.5s ease forwards;
-        }
-        .info-card:hover { transform: translateY(-5px); }
-        .label { font-size: 0.7rem; color: var(--text-light); text-transform: uppercase; font-weight: 600; display: block; margin-bottom: 4px; }
-        .value { font-size: 1rem; color: var(--text-dark); font-weight: 500; word-break: break-word; }
+.search-wrapper{
+max-width:600px;
+margin:-40px auto 40px;
+padding:0 20px;
+position:relative;
+}
+#mainSearch{
+width:100%;
+padding:20px 25px;
+border-radius:100px;
+border:none;
+box-shadow:0 15px 35px rgba(0,0,0,0.15);
+font-size:1rem;
+outline:none;
+}
+.suggestions{
+position:absolute;
+top:75px;left:30px;right:30px;
+background:white;
+border-radius:15px;
+box-shadow:var(--shadow);
+max-height:300px;
+overflow-y:auto;
+display:none;
+z-index:999;
+}
+.suggestion-item{
+padding:15px 20px;
+cursor:pointer;
+border-bottom:1px solid #f1f1f1;
+}
+.suggestion-item:hover{background:#e0f2f1}
 
-        /* Loader & Messages */
-        #statusMsg { text-align: center; margin-bottom: 20px; font-size: 0.9rem; color: var(--text-light); }
-        .badge { background: #00796b; color: white; padding: 4px 12px; border-radius: 50px; font-size: 0.8rem; }
+.container{
+max-width:1200px;
+margin:auto;
+padding:0 20px 80px;
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+.section-box{
+background:white;
+margin-bottom:30px;
+padding:25px;
+border-radius:20px;
+box-shadow:var(--shadow);
+}
+.section-box h3{
+margin-bottom:20px;
+font-weight:600;
+color:#004d40;
+border-left:5px solid var(--accent);
+padding-left:10px;
+}
+.section-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+gap:15px;
+}
+.info-card{
+background:#fafafa;
+padding:15px;
+border-radius:15px;
+border-top:4px solid var(--accent);
+}
+.label{
+font-size:.7rem;
+color:var(--text-light);
+text-transform:uppercase;
+font-weight:600;
+}
+.value{
+font-size:.95rem;
+font-weight:500;
+margin-top:4px;
+word-break:break-word;
+}
 
-        @media (max-width: 600px) {
-            header h1 { font-size: 1.6rem; }
-            .grid { grid-template-columns: 1fr; }
-        }
-    </style>
+#statusMsg{
+text-align:center;
+margin-bottom:20px;
+font-size:.9rem;
+color:var(--text-light);
+}
+
+@media(max-width:600px){
+.section-grid{grid-template-columns:1fr}
+}
+</style>
 </head>
+
 <body>
 
 <header>
-    <h1>S019 ARAMCO ID LOG</h1>
-    <p>DIGITAL PERSONNEL DATABASE</p>
+<h1>S019 ARAMCO ID LOG</h1>
+<p>DIGITAL PERSONNEL DATABASE</p>
 </header>
 
 <div class="search-wrapper">
-    <input type="text" id="mainSearch" placeholder="Type Employee Name..." autocomplete="off">
-    <div id="suggestions" class="suggestions"></div>
+<input type="text" id="mainSearch" placeholder="Search by Company..." autocomplete="off">
+<div id="suggestions" class="suggestions"></div>
 </div>
 
-<div id="statusMsg">Initializing Database...</div>
+<div id="statusMsg">Loading Database...</div>
 
 <div class="container">
-    <div id="infoGrid" class="grid">
-        </div>
+<div id="infoContainer"></div>
 </div>
 
 <script>
-    const FILE_URL = 'S019-ARAMCO ID LOG.xlsx';
-    let database = [];
 
-    // 1. LOAD AND NORMALIZE EXCEL DATA
-    async function loadExcel() {
-        const status = document.getElementById('statusMsg');
-        try {
-            const response = await fetch(FILE_URL);
-            if (!response.ok) throw new Error("Excel file not found in repository.");
-            
-            const arrayBuffer = await response.arrayBuffer();
-            const data = new Uint8Array(arrayBuffer);
-            const workbook = XLSX.read(data, { type: 'array' });
-            
-            // Get first sheet data
-            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-            const rawJson = XLSX.utils.sheet_to_json(firstSheet, { defval: "" });
+const FILE_URL = 'S019-ARAMCO ID LOG.xlsx';
+let database = [];
 
-            // Normalize: Trim spaces and force uppercase keys to prevent matching errors
-            database = rawJson.map(row => {
-                let cleanRow = {};
-                for (let key in row) {
-                    cleanRow[key.toString().trim().toUpperCase()] = row[key];
-                }
-                return cleanRow;
-            });
+async function loadExcel(){
+const status=document.getElementById('statusMsg');
+try{
+const response=await fetch(FILE_URL);
+const arrayBuffer=await response.arrayBuffer();
+const workbook=XLSX.read(arrayBuffer,{type:'array'});
+const sheet=workbook.Sheets["ARAMCO ID LOG - S019"];
+const raw=XLSX.utils.sheet_to_json(sheet,{defval:""});
 
-            status.innerHTML = `✅ <span style="color:green">Database Ready: ${database.length} Records Detected</span>`;
-        } catch (err) {
-            status.innerHTML = `❌ <span style="color:red">Error: ${err.message}</span>`;
-            console.error(err);
-        }
-    }
+database=raw.map(row=>{
+let clean={};
+for(let key in row){
+clean[key.trim().toUpperCase()]=row[key];
+}
+return clean;
+});
 
-    // 2. LIVE SEARCH LOGIC
-    const searchInput = document.getElementById('mainSearch');
-    const suggestBox = document.getElementById('suggestions');
+status.innerHTML="✅ Database Ready : "+database.length+" Records";
 
-    searchInput.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        suggestBox.innerHTML = '';
+}catch(err){
+status.innerHTML="❌ Error loading Excel file";
+console.error(err);
+}
+}
 
-        if (query.length < 1) {
-            suggestBox.style.display = 'none';
-            return;
-        }
+const searchInput=document.getElementById('mainSearch');
+const suggestBox=document.getElementById('suggestions');
 
-        // Search in the "NAME" column (Column C)
-        const matches = database.filter(item => 
-            String(item['NAME'] || "").toLowerCase().includes(query)
-        ).slice(0, 10); // Limit results for speed
+searchInput.addEventListener('input',(e)=>{
+const query=e.target.value.toLowerCase().trim();
+suggestBox.innerHTML='';
+if(query.length<1){suggestBox.style.display='none';return;}
 
-        if (matches.length > 0) {
-            suggestBox.style.display = 'block';
-            matches.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'suggestion-item';
-                div.innerHTML = `
-                    <span class="comp">${item['COMPANY']}</span>
-                    <span class="name">${item['NAME']}</span>
-                `;
-                div.onclick = () => renderDetails(item);
-                suggestBox.appendChild(div);
-            });
-        } else {
-            suggestBox.style.display = 'none';
-        }
-    });
+const matches=database.filter(item=>
+String(item['COMPANY']||"").toLowerCase().includes(query)
+).slice(0,10);
 
-    // 3. DISPLAY DATA IN CARDS
-    function renderDetails(person) {
-        const grid = document.getElementById('infoGrid');
-        searchInput.value = person['NAME'];
-        suggestBox.style.display = 'none';
-        grid.innerHTML = '';
-        grid.style.display = 'grid';
+if(matches.length>0){
+suggestBox.style.display='block';
+matches.forEach(item=>{
+const div=document.createElement('div');
+div.className='suggestion-item';
+div.innerText=item['COMPANY'];
+div.onclick=()=>renderDetails(item);
+suggestBox.appendChild(div);
+});
+}else{
+suggestBox.style.display='none';
+}
+});
 
-        // Requirement map: [Label to Show, Key in Excel]
-        const schema = [
-            ["Company", "COMPANY"],
-            ["Name", "NAME"],
-            ["Designation", "DESIGNATION"],
-            ["Iqama Number", "IQAMA NO."],
-            ["Iqama Issue Date", "ISSUE DATE"],
-            ["Iqama Expiry Date", "EXPIRY DATE"],
-            ["Date of Birth", "DATE OF BIRTH"],
-            ["Blood Type", "BLOOD TYPE"],
-            ["Nationality", "NATIONALITY"],
-            ["Religion", "RELIGION"],
-            ["Gender", "GENDER"],
-            ["Passport Number", "PASSPORT NUMBER"],
-            ["Place of Issue", "PLACE OF ISSUE"],
-            ["Passport Issue Date", "ISSUE DATE (Passport)"],
-            ["Passport Expiry Date", "EXPIRY DATE (Passport)"],
-            ["Gate Pass Status", "GATE PASS STATUS"]
-        ];
+function renderDetails(person){
+searchInput.value=person['COMPANY'];
+suggestBox.style.display='none';
+const container=document.getElementById('infoContainer');
+container.innerHTML='';
 
-        schema.forEach(([label, key]) => {
-            let value = person[key.toUpperCase()] || "N/A";
+function createSection(title,fields){
+let section=document.createElement('div');
+section.className='section-box';
+let html=`<h3>${title}</h3><div class="section-grid">`;
 
-            // Handle Excel Date Serial Numbers (e.g., 44561 -> 01/01/2022)
-            if (label.toLowerCase().includes('date') && typeof value === 'number') {
-                value = new Date((value - 25569) * 86400000).toLocaleDateString('en-GB');
-            }
+fields.forEach(([label,key])=>{
+let value=person[key]||"N/A";
 
-            const card = document.createElement('div');
-            card.className = 'info-card';
-            card.innerHTML = `
-                <span class="label">${label}</span>
-                <span class="value">${label === 'Gate Pass Status' ? `<span class="badge">${value}</span>` : value}</span>
-            `;
-            grid.appendChild(card);
-        });
-    }
+if(label.toLowerCase().includes('date') && typeof value==='number'){
+value=new Date((value-25569)*86400000).toLocaleDateString('en-GB');
+}
 
-    // Init
-    window.onload = loadExcel;
+html+=`
+<div class="info-card">
+<span class="label">${label}</span>
+<span class="value">${value}</span>
+</div>`;
+});
 
-    // Close suggestions on outside click
-    window.addEventListener('click', (e) => {
-        if (!e.target.closest('.search-wrapper')) suggestBox.style.display = 'none';
-    });
+html+=`</div>`;
+section.innerHTML=html;
+container.appendChild(section);
+}
+
+createSection("Company Information",[
+["Company","COMPANY"],
+["Designation","DESIGNATION"],
+["Gate Pass Status","GATE PASS STATUS"]
+]);
+
+createSection("Personal Information",[
+["Name","NAME"],
+["Date of Birth","DATE OF BIRTH"],
+["Blood Type","BLOOD TYPE"],
+["Nationality","NATIONALITY"],
+["Religion","RELIGION"],
+["Gender","GENDER"]
+]);
+
+createSection("Iqama Information",[
+["Iqama Number","IQAMA NO."],
+["Issue Date","ISSUE DATE"],
+["Expiry Date","EXPIRY DATE"]
+]);
+
+createSection("Passport Information",[
+["Passport Number","PASSPORT NUMBER"],
+["Place of Issue","PLACE OF ISSUE"],
+["Issue Date","ISSUE DATE (PASSPORT)"],
+["Expiry Date","EXPIRY DATE (PASSPORT)"]
+]);
+
+}
+
+window.onload=loadExcel;
+
+window.addEventListener('click',(e)=>{
+if(!e.target.closest('.search-wrapper')){
+suggestBox.style.display='none';
+}
+});
+
 </script>
 
 </body>
