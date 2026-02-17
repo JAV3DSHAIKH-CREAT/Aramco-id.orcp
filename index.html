@@ -3,32 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>S019 - ARAMCO ID LOG Dashboard</title>
+<title>S019 - ARAMCO ID LOG</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
 
 <style>
 :root{
---primary-gradient:linear-gradient(135deg,#004d40 0%,#00796b 100%);
---accent:#00bfa5;
---bg:#f0f2f5;
---card-bg:#ffffff;
---text-dark:#2d3436;
---text-light:#636e72;
---shadow:0 10px 30px rgba(0,0,0,0.08);
+--dark-bg:#0f172a;
+--card-bg:#1e293b;
+--accent:#2563eb;
+--light:#e2e8f0;
+--muted:#94a3b8;
+--shadow:0 10px 25px rgba(0,0,0,0.4);
 }
 
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text-dark)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+font-family:'Poppins',sans-serif;
+background:var(--dark-bg);
+color:var(--light);
+}
 
 header{
-background:var(--primary-gradient);
-color:white;
+background:linear-gradient(135deg,#1e3a8a,#2563eb);
 padding:60px 20px 80px;
 text-align:center;
-border-bottom-left-radius:50px;
-border-bottom-right-radius:50px;
+border-bottom-left-radius:40px;
+border-bottom-right-radius:40px;
+box-shadow:var(--shadow);
 }
 header h1{font-size:2rem;font-weight:600}
 header p{opacity:.8}
@@ -39,32 +42,41 @@ margin:-40px auto 40px;
 padding:0 20px;
 position:relative;
 }
+
 #mainSearch{
 width:100%;
-padding:20px 25px;
-border-radius:100px;
+padding:18px 25px;
+border-radius:50px;
 border:none;
-box-shadow:0 15px 35px rgba(0,0,0,0.15);
 font-size:1rem;
 outline:none;
+background:#1e293b;
+color:white;
+box-shadow:var(--shadow);
+border:1px solid #334155;
 }
+
 .suggestions{
 position:absolute;
-top:75px;left:30px;right:30px;
-background:white;
+top:70px;left:30px;right:30px;
+background:#1e293b;
 border-radius:15px;
-box-shadow:var(--shadow);
 max-height:300px;
 overflow-y:auto;
 display:none;
-z-index:999;
+box-shadow:var(--shadow);
+border:1px solid #334155;
 }
+
 .suggestion-item{
 padding:15px 20px;
 cursor:pointer;
-border-bottom:1px solid #f1f1f1;
+border-bottom:1px solid #334155;
+color:var(--light);
 }
-.suggestion-item:hover{background:#e0f2f1}
+.suggestion-item:hover{
+background:#2563eb;
+}
 
 .container{
 max-width:1200px;
@@ -73,48 +85,53 @@ padding:0 20px 80px;
 }
 
 .section-box{
-background:white;
+background:var(--card-bg);
 margin-bottom:30px;
 padding:25px;
 border-radius:20px;
 box-shadow:var(--shadow);
+border:1px solid #334155;
 }
+
 .section-box h3{
 margin-bottom:20px;
 font-weight:600;
-color:#004d40;
+color:#60a5fa;
 border-left:5px solid var(--accent);
 padding-left:10px;
 }
+
 .section-grid{
 display:grid;
 grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
 gap:15px;
 }
+
 .info-card{
-background:#fafafa;
+background:#0f172a;
 padding:15px;
 border-radius:15px;
-border-top:4px solid var(--accent);
+border:1px solid #334155;
 }
+
 .label{
 font-size:.7rem;
-color:var(--text-light);
+color:var(--muted);
 text-transform:uppercase;
 font-weight:600;
 }
+
 .value{
 font-size:.95rem;
+margin-top:5px;
 font-weight:500;
-margin-top:4px;
-word-break:break-word;
 }
 
 #statusMsg{
 text-align:center;
 margin-bottom:20px;
 font-size:.9rem;
-color:var(--text-light);
+color:var(--muted);
 }
 
 @media(max-width:600px){
@@ -126,12 +143,12 @@ color:var(--text-light);
 <body>
 
 <header>
-<h1>S019 ARAMCO ID LOG</h1>
-<p>DIGITAL PERSONNEL DATABASE</p>
+<h1>JAFFURAH - S019 ARAMCO ID DETAILS</h1>
+<p>PROFESSIONAL PERSONNEL DATABASE</p>
 </header>
 
 <div class="search-wrapper">
-<input type="text" id="mainSearch" placeholder="Search by Company..." autocomplete="off">
+<input type="text" id="mainSearch" placeholder="Search by FILE NO..." autocomplete="off">
 <div id="suggestions" class="suggestions"></div>
 </div>
 
@@ -143,8 +160,8 @@ color:var(--text-light);
 
 <script>
 
-const FILE_URL = 'S019-ARAMCO ID LOG.xlsx';
-let database = [];
+const FILE_URL='S019-ARAMCO ID LOG.xlsx';
+let database=[];
 
 async function loadExcel(){
 const status=document.getElementById('statusMsg');
@@ -163,7 +180,7 @@ clean[key.trim().toUpperCase()]=row[key];
 return clean;
 });
 
-status.innerHTML="✅ Database Ready : "+database.length+" Records";
+status.innerHTML="✅ Data Loaded For : "+database.length+" Records";
 
 }catch(err){
 status.innerHTML="❌ Error loading Excel file";
@@ -180,7 +197,7 @@ suggestBox.innerHTML='';
 if(query.length<1){suggestBox.style.display='none';return;}
 
 const matches=database.filter(item=>
-String(item['COMPANY']||"").toLowerCase().includes(query)
+String(item['FILE NO.']||"").toLowerCase().includes(query)
 ).slice(0,10);
 
 if(matches.length>0){
@@ -188,7 +205,7 @@ suggestBox.style.display='block';
 matches.forEach(item=>{
 const div=document.createElement('div');
 div.className='suggestion-item';
-div.innerText=item['COMPANY'];
+div.innerText=item['FILE NO.'];
 div.onclick=()=>renderDetails(item);
 suggestBox.appendChild(div);
 });
@@ -198,7 +215,7 @@ suggestBox.style.display='none';
 });
 
 function renderDetails(person){
-searchInput.value=person['COMPANY'];
+searchInput.value=person['FILE NO.'];
 suggestBox.style.display='none';
 const container=document.getElementById('infoContainer');
 container.innerHTML='';
@@ -228,6 +245,7 @@ container.appendChild(section);
 }
 
 createSection("Company Information",[
+["File No.","FILE NO."],
 ["Company","COMPANY"],
 ["Designation","DESIGNATION"],
 ["Gate Pass Status","GATE PASS STATUS"]
