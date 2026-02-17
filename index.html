@@ -25,13 +25,13 @@ body{
     background:var(--dark-bg);
     color:var(--light);
     height: 100vh;
-    overflow: hidden; /* Prevents whole page scrolling */
+    overflow: hidden;
 }
 
 header{
     position:relative;
     background:linear-gradient(135deg,#1e3a8a,#2563eb);
-    padding: 20px; /* Reduced padding to save vertical space */
+    padding: 20px;
     text-align:center;
     border-bottom-left-radius:30px;
     border-bottom-right-radius:30px;
@@ -46,7 +46,7 @@ header p{font-size: 0.8rem; opacity:.8}
     left:30px;
     top:50%;
     transform:translateY(-50%);
-    width:60px; /* Smaller logo for compact view */
+    width:60px;
     height:60px;
     object-fit:contain;
 }
@@ -90,22 +90,21 @@ header p{font-size: 0.8rem; opacity:.8}
 }
 .suggestion-item:hover{ background:#2563eb; }
 
-/* TWO COLUMN WRAPPER LOGIC */
 .container {
     max-width: 95%;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap; /* Key: Makes items jump to the next column */
-    height: 70vh;    /* Adjust based on your screen height */
+    flex-wrap: wrap;
+    height: 70vh;
     gap: 15px;
     justify-content: flex-start;
-    align-content: center; /* Centers the two columns on screen */
+    align-content: center;
 }
 
 .section-box {
     background: var(--card-bg);
-    width: 48%; /* Allows two columns with a gap */
+    width: 48%;
     padding: 15px;
     border-radius: 15px;
     box-shadow: var(--shadow);
@@ -301,6 +300,7 @@ function renderDetails(person){
         ["Expiry Date","PP-EXPIRY DATE"]
     ]);
 
+    // ARAMCO ID SECTION WITH REMAINING DAYS
     createSection("Aramco ID Details",[
         ["Badge no","BADGE NO."],
         ["GP Apply Date","REQ DATE"],
@@ -309,9 +309,30 @@ function renderDetails(person){
         ["ID office","ID OFFICE"],
         ["Issue Date","CARD ISSUE DATE"],
         ["Expiry Date","CARD EXPIRY DATE"],
+        ["Remaining Days","CARD EXPIRY DATE"], // We will calculate remaining days
         ["ID Location","CARD WITH"]
-        ["REMAINING DAYS","REMAINING DAYS"]
     ]);
+
+    // Update remaining days dynamically
+    const cards=document.querySelectorAll('.section-box');
+    const lastSection=cards[cards.length-1]; // Aramco ID section
+    const infoCards=lastSection.querySelectorAll('.info-card');
+    infoCards.forEach(card=>{
+        const labelEl=card.querySelector('.label');
+        if(labelEl.innerText==="Remaining Days"){
+            const valueEl=card.querySelector('.value');
+            const expDate=person["CARD EXPIRY DATE"];
+            let remaining="N/A";
+            if(typeof expDate==='number'){
+                const dateExp=new Date((expDate-25569)*86400000);
+                const today=new Date();
+                remaining=Math.ceil((dateExp-today)/(1000*60*60*24));
+                if(remaining<0) remaining=0;
+            }
+            valueEl.innerText=remaining;
+            valueEl.style.color="#f87171"; // red for emphasis
+        }
+    });
 }
 
 window.onload=loadExcel;
@@ -325,5 +346,3 @@ window.addEventListener('click',(e)=>{
 
 </body>
 </html>
- 
-
