@@ -41,11 +41,11 @@ header p{opacity:.8}
 /* LOGO STYLE */
 .logo{
 position:absolute;
-left:40px;          /* Move to left */
-top:50%;            /* Move to vertical center */
-transform:translateY(-50%);  /* Perfect vertical centering */
-width:192px;        /* 2 inches */
-height:192px;       /* 2 inches */
+left:40px;
+top:50%;
+transform:translateY(-50%);
+width:192px;
+height:192px;
 object-fit:contain;
 }
 
@@ -294,17 +294,18 @@ createSection("Passport Information",[
 ["Expiry Date","PP-EXPIRY DATE"]
 ]);
 
-createSection("Aramco id Information",[
+// ✅ New Aramco ID Information Section
+createSection("Aramco ID Information",[
 ["Badge no","BADGE NO."],
 ["GP apply date","GP APPLY DATE"],
 ["SA Req No.","SA REQ NO."],
-["Appointmentdate","APPOINTMENT DATE"]
-["ID office","ID OFFICE"]
-["SA ID ISSUE DATE","CARD ISSUE DATE"]
-["SA ID EXPIRY DATE","CARD EXPIRY DATE"]
+["Appointmentdate","APPOINTMENT DATE"],
+["ID office","ID OFFICE"],
+["SA ID ISSUE DATE","CARD ISSUE DATE"],
+["SA ID EXPIRY DATE","CARD EXPIRY DATE"],
 ["ID Available","CARD WITH"]
 ]);
-  
+
 }
 
 window.onload=loadExcel;
@@ -319,5 +320,3 @@ suggestBox.style.display='none';
 
 </body>
 </html>
-
-
