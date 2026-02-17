@@ -51,7 +51,6 @@ header p{font-size: 0.8rem; opacity:.8}
     object-fit:contain;
 }
 
-/* NEW BUTTON */
 #showFullDataBtn{
     position:absolute;
     right:30px;
@@ -349,7 +348,7 @@ function renderDetails(person){
         ["ID Location","CARD WITH"]
     ]);
 
-    // CALCULATE REMAINING DAYS FROM EXPIRY DATE ONLY
+    // CALCULATE REMAINING DAYS AND COLOR CHANGE
     const cards=document.querySelectorAll('.section-box');
     const lastSection=cards[cards.length-1];
     const infoCards=lastSection.querySelectorAll('.info-card');
@@ -366,25 +365,26 @@ function renderDetails(person){
                 if(remaining<0) remaining=0;
             }
             valueEl.innerText=remaining + " Days";
-            valueEl.style.color=remaining <=30 ? "#f87171" : "#22c55e";
+            valueEl.style.color=remaining <=50 ? "#f87171" : "#22c55e";
         }
     });
 }
 
-// SHOW FULL DATA PAGE
+// SHOW FULL DATA BUTTON WITH ORGANIZED TABLE AND FROZEN HEADER
 document.getElementById('showFullDataBtn').addEventListener('click',()=>{
     const win=window.open("", "_blank");
     win.document.write(`<html><head><title>Full Data</title>
     <style>
         body{font-family:'Poppins',sans-serif; background:#0f172a; color:#e2e8f0; padding:20px;}
+        .table-container{max-height:90vh; overflow:auto; border:1px solid #334155;}
         table{border-collapse:collapse; width:100%;}
-        th, td{border:1px solid #334155; padding:6px 10px; text-align:left;}
-        th{background:#2563eb; color:#fff;}
+        th, td{border:1px solid #334155; padding:6px 10px; text-align:left; white-space:nowrap;}
+        th{background:#2563eb; color:#fff; position:sticky; top:0; z-index:2;}
         tr:nth-child(even){background:#1e293b;}
     </style>
     </head><body>
     <h2>FULL ARAMCO ID LOG DATA</h2>
-    <table>
+    <div class="table-container"><table>
         <thead>
             <tr>`);
 
@@ -404,7 +404,7 @@ document.getElementById('showFullDataBtn').addEventListener('click',()=>{
         win.document.write(`</tbody>`);
     }
 
-    win.document.write(`</table></body></html>`);
+    win.document.write(`</table></div></body></html>`);
 });
 
 window.onload=loadExcel;
@@ -418,4 +418,3 @@ window.addEventListener('click',(e)=>{
 
 </body>
 </html>
-
