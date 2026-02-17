@@ -10,168 +10,154 @@
 
 <style>
 :root{
---dark-bg:#0f172a;
---card-bg:#1e293b;
---accent:#2563eb;
---light:#e2e8f0;
---muted:#94a3b8;
---shadow:0 10px 25px rgba(0,0,0,0.4);
+    --dark-bg:#0f172a;
+    --card-bg:#1e293b;
+    --accent:#2563eb;
+    --light:#e2e8f0;
+    --muted:#94a3b8;
+    --shadow:0 10px 25px rgba(0,0,0,0.4);
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
+
 body{
-font-family:'Poppins',sans-serif;
-background:var(--dark-bg);
-color:var(--light);
+    font-family:'Poppins',sans-serif;
+    background:var(--dark-bg);
+    color:var(--light);
+    height: 100vh;
+    overflow: hidden; /* Prevents whole page scrolling */
 }
 
 header{
-position:relative;
-background:linear-gradient(135deg,#1e3a8a,#2563eb);
-padding:60px 20px 80px;
-text-align:center;
-border-bottom-left-radius:40px;
-border-bottom-right-radius:40px;
-box-shadow:var(--shadow);
+    position:relative;
+    background:linear-gradient(135deg,#1e3a8a,#2563eb);
+    padding: 20px; /* Reduced padding to save vertical space */
+    text-align:center;
+    border-bottom-left-radius:30px;
+    border-bottom-right-radius:30px;
+    box-shadow:var(--shadow);
 }
 
-header h1{font-size:2rem;font-weight:600}
-header p{opacity:.8}
+header h1{font-size:1.5rem;font-weight:600}
+header p{font-size: 0.8rem; opacity:.8}
 
-/* LOGO STYLE */
 .logo{
-position:absolute;
-left:40px;
-top:50%;
-transform:translateY(-50%);
-width:192px;
-height:192px;
-object-fit:contain;
+    position:absolute;
+    left:30px;
+    top:50%;
+    transform:translateY(-50%);
+    width:60px; /* Smaller logo for compact view */
+    height:60px;
+    object-fit:contain;
 }
 
 .search-wrapper{
-max-width:600px;
-margin:-40px auto 40px;
-padding:0 20px;
-position:relative;
+    max-width:500px;
+    margin: 15px auto;
+    position:relative;
+    z-index: 10;
 }
 
 #mainSearch{
-width:100%;
-padding:18px 25px;
-border-radius:50px;
-border:none;
-font-size:1rem;
-outline:none;
-background:#1e293b;
-color:white;
-box-shadow:var(--shadow);
-border:1px solid #334155;
+    width:100%;
+    padding:12px 20px;
+    border-radius:50px;
+    border:1px solid #334155;
+    font-size:0.9rem;
+    outline:none;
+    background:#1e293b;
+    color:white;
+    box-shadow:var(--shadow);
 }
 
 .suggestions{
-position:absolute;
-top:70px;left:30px;right:30px;
-background:#1e293b;
-border-radius:15px;
-max-height:300px;
-overflow-y:auto;
-display:none;
-box-shadow:var(--shadow);
-border:1px solid #334155;
-}
-
-.suggestion-item{
-padding:15px 20px;
-cursor:pointer;
-border-bottom:1px solid #334155;
-color:var(--light);
-}
-.suggestion-item:hover{
-background:#2563eb;
-}
-
-.container{
-max-width:1200px;
-margin:auto;
-padding:0 20px 80px;
-}
-
-/* Make infoContainer horizontal scrollable */
-#infoContainer {
-    display: flex;
-    gap: 20px;
-    overflow-x: auto;
-    padding-bottom: 20px;
-}
-
-/* Section boxes fixed width for dashboard style */
-.section-box {
-    min-width: 300px; /* adjust as needed */
-    flex: 0 0 auto;
-    background: var(--card-bg);
-    margin-bottom: 30px;
-    padding: 25px;
-    border-radius: 20px;
-    box-shadow: var(--shadow);
+    position:absolute;
+    top:50px;left:0;right:0;
+    background:#1e293b;
+    border-radius:15px;
+    max-height:200px;
+    overflow-y:auto;
+    display:none;
+    box-shadow:var(--shadow);
     border:1px solid #334155;
 }
 
+.suggestion-item{
+    padding:10px 20px;
+    cursor:pointer;
+    border-bottom:1px solid #334155;
+    font-size: 0.9rem;
+}
+.suggestion-item:hover{ background:#2563eb; }
+
+/* TWO COLUMN WRAPPER LOGIC */
+.container {
+    max-width: 95%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap; /* Key: Makes items jump to the next column */
+    height: 70vh;    /* Adjust based on your screen height */
+    gap: 15px;
+    justify-content: flex-start;
+    align-content: center; /* Centers the two columns on screen */
+}
+
+.section-box {
+    background: var(--card-bg);
+    width: 48%; /* Allows two columns with a gap */
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    border: 1px solid #334155;
+}
+
 .section-box h3{
-margin-bottom:20px;
-font-weight:700;
-font-size:1.2rem;
-color:#3b82f6;
-border-left:5px solid var(--accent);
-padding-left:12px;
-letter-spacing:0.5px;
+    margin-bottom:12px;
+    font-weight:700;
+    font-size:1rem;
+    color:#3b82f6;
+    border-left:4px solid var(--accent);
+    padding-left:10px;
 }
 
 .section-grid{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
-gap:10px;
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:8px;
 }
 
 .info-card{
-background:#0f172a;
-padding:10px;
-border-radius:10px;
-border:1px solid #334155;
+    background:#0f172a;
+    padding:8px 12px;
+    border-radius:10px;
+    border:1px solid #334155;
 }
 
 .label{
-font-size:.7rem;
-color:var(--muted);
-text-transform:uppercase;
-font-weight:600;
+    font-size:0.6rem;
+    color:var(--muted);
+    text-transform:uppercase;
+    display: block;
 }
 
 .value{
-font-size:.85rem;
-margin-top:5px;
-font-weight:500;
+    font-size:0.85rem;
+    font-weight:500;
+    word-break: break-all;
 }
 
 #statusMsg{
-text-align:center;
-margin-bottom:20px;
-font-size:.9rem;
-color:var(--muted);
+    text-align:center;
+    margin-bottom:10px;
+    font-size:.8rem;
+    color:#22c55e;
 }
 
-/* Scrollbar style for horizontal scroll */
-#infoContainer::-webkit-scrollbar {
-    height: 8px;
-}
-#infoContainer::-webkit-scrollbar-thumb {
-    background: #2563eb;
-    border-radius: 4px;
-}
-
-@media(max-width:600px){
-.section-box{min-width:250px}
-.section-grid{grid-template-columns:1fr}
+@media(max-width:1000px){
+    body { overflow-y: auto; height: auto; }
+    .container { height: auto; flex-wrap: nowrap; align-content: stretch; }
+    .section-box { width: 100%; }
 }
 </style>
 </head>
@@ -179,164 +165,161 @@ color:var(--muted);
 <body>
 
 <header>
-<img src="orcp.bmp" class="logo" alt="ORCP Logo">
-<h1>JAFFURAH - S019 ARAMCO ID DETAILS</h1>
-<p>PROFESSIONAL PERSONNEL DATABASE</p>
+    <img src="orcp.bmp" class="logo" alt="ORCP Logo">
+    <h1>JAFFURAH - S019 ARAMCO ID DETAILS</h1>
+    <p>PROFESSIONAL PERSONNEL DATABASE</p>
 </header>
 
 <div class="search-wrapper">
-<input type="text" id="mainSearch" placeholder="Search by FILE NO..." autocomplete="off">
-<div id="suggestions" class="suggestions"></div>
+    <input type="text" id="mainSearch" placeholder="Search by FILE NO..." autocomplete="off">
+    <div id="suggestions" class="suggestions"></div>
 </div>
 
-<div id="statusMsg">Loading Database...</div>
+<div id="statusMsg">Connecting to Database...</div>
 
-<div class="container">
-<div id="infoContainer"></div>
-</div>
+<div class="container" id="infoContainer">
+    </div>
 
 <script>
-
 const FILE_URL='S019-ARAMCO ID LOG.xlsx';
 let database=[];
 
 async function loadExcel(){
-const status=document.getElementById('statusMsg');
-try{
-const response=await fetch(FILE_URL);
-const arrayBuffer=await response.arrayBuffer();
-const workbook=XLSX.read(arrayBuffer,{type:'array'});
-const sheet=workbook.Sheets["ARAMCO ID LOG - S019"];
-const raw=XLSX.utils.sheet_to_json(sheet,{defval:""});
+    const status=document.getElementById('statusMsg');
+    try{
+        const response=await fetch(FILE_URL);
+        const arrayBuffer=await response.arrayBuffer();
+        const workbook=XLSX.read(arrayBuffer,{type:'array'});
+        const sheet=workbook.Sheets["ARAMCO ID LOG - S019"];
+        const raw=XLSX.utils.sheet_to_json(sheet,{defval:""});
 
-database=raw.map(row=>{
-let clean={};
-for(let key in row){
-clean[key.trim().toUpperCase()]=row[key];
-}
-return clean;
-});
+        database=raw.map(row=>{
+            let clean={};
+            for(let key in row){
+                clean[key.trim().toUpperCase()]=row[key];
+            }
+            return clean;
+        });
 
-status.innerHTML="✅ Data Loaded For : "+database.length+" Records";
+        status.innerHTML="✅ Data Loaded: "+database.length+" Records Found";
 
-}catch(err){
-status.innerHTML="❌ Error loading Excel file";
-console.error(err);
-}
+    }catch(err){
+        status.innerHTML="❌ Error: Ensure Excel file is in the same folder";
+        console.error(err);
+    }
 }
 
 const searchInput=document.getElementById('mainSearch');
 const suggestBox=document.getElementById('suggestions');
 
 searchInput.addEventListener('input',(e)=>{
-const query=e.target.value.toLowerCase().trim();
-suggestBox.innerHTML='';
-if(query.length<1){suggestBox.style.display='none';return;}
+    const query=e.target.value.toLowerCase().trim();
+    suggestBox.innerHTML='';
+    if(query.length<1){suggestBox.style.display='none';return;}
 
-const matches=database.filter(item=>
-String(item['FILE NO.']||"").toLowerCase().includes(query)
-).slice(0,10);
+    const matches=database.filter(item=>
+        String(item['FILE NO.']||"").toLowerCase().includes(query)
+    ).slice(0,8);
 
-if(matches.length>0){
-suggestBox.style.display='block';
-matches.forEach(item=>{
-const div=document.createElement('div');
-div.className='suggestion-item';
-div.innerText=item['FILE NO.'];
-div.onclick=()=>renderDetails(item);
-suggestBox.appendChild(div);
-});
-}else{
-suggestBox.style.display='none';
-}
+    if(matches.length>0){
+        suggestBox.style.display='block';
+        matches.forEach(item=>{
+            const div=document.createElement('div');
+            div.className='suggestion-item';
+            div.innerText=item['FILE NO.'] + " - " + (item['NAME'] || "");
+            div.onclick=()=>renderDetails(item);
+            suggestBox.appendChild(div);
+        });
+    }else{
+        suggestBox.style.display='none';
+    }
 });
 
 function renderDetails(person){
-searchInput.value=person['FILE NO.'];
-suggestBox.style.display='none';
-const container=document.getElementById('infoContainer');
-container.innerHTML='';
+    searchInput.value=person['FILE NO.'];
+    suggestBox.style.display='none';
+    const container=document.getElementById('infoContainer');
+    container.innerHTML='';
 
-function createSection(title,fields){
-let section=document.createElement('div');
-section.className='section-box';
-let html=`<h3>${title}</h3><div class="section-grid">`;
+    function createSection(title,fields){
+        let section=document.createElement('div');
+        section.className='section-box';
+        let html=`<h3>${title}</h3><div class="section-grid">`;
 
-fields.forEach(([label,key])=>{
-let value=person[key]||"N/A";
-let extraStyle="";
+        fields.forEach(([label,key])=>{
+            let value=person[key]||"N/A";
+            let extraStyle="";
 
-if(label==="Gate Pass Status"){
-extraStyle="color:#22c55e;font-weight:700;font-size:1rem;";
-}
+            if(label==="Gate Pass Status" && value.toString().toUpperCase()==="IN PROCESS"){
+                extraStyle="color:#eab308;";
+            } else if(label==="Gate Pass Status"){
+                extraStyle="color:#22c55e;";
+            }
 
-if(label.toLowerCase().includes('date') && typeof value==='number'){
-value=new Date((value-25569)*86400000).toLocaleDateString('en-GB');
-}
+            if(label.toLowerCase().includes('date') && typeof value==='number'){
+                value=new Date((value-25569)*86400000).toLocaleDateString('en-GB');
+            }
 
-html+=`
-<div class="info-card">
-<span class="label">${label}</span>
-<span class="value" style="${extraStyle}">${value}</span>
-</div>`;
-});
+            html+=`
+            <div class="info-card">
+                <span class="label">${label}</span>
+                <span class="value" style="${extraStyle}">${value}</span>
+            </div>`;
+        });
 
-html+=`</div>`;
-section.innerHTML=html;
-container.appendChild(section);
-}
+        html+=`</div>`;
+        section.innerHTML=html;
+        container.appendChild(section);
+    }
 
-createSection("Company Information",[
-["File No.","FILE NO."],
-["Company","COMPANY"],
-["Designation","DESIGNATION"],
-["Gate Pass Status","GATE PASS STATUS"]
-]);
+    createSection("Company Info",[
+        ["File No.","FILE NO."],
+        ["Company","COMPANY"],
+        ["Designation","DESIGNATION"],
+        ["Gate Pass Status","GATE PASS STATUS"]
+    ]);
 
-createSection("Personal Information",[
-["Name","NAME"],
-["Date of Birth","DATE OF BIRTH"],
-["Blood Type","BLOOD TYPE"],
-["Nationality","NATIONALITY"],
-["Religion","RELIGION"],
-["Gender","GENDER"]
-]);
+    createSection("Personal Info",[
+        ["Name","NAME"],
+        ["DOB","DATE OF BIRTH"],
+        ["Blood Type","BLOOD TYPE"],
+        ["Nationality","NATIONALITY"],
+        ["Religion","RELIGION"],
+        ["Gender","GENDER"]
+    ]);
 
-createSection("Iqama Information",[
-["Iqama Number","IQAMA NO."],
-["Issue Date","ISSUE DATE"],
-["Expiry Date","EXPIRY DATE"]
-]);
+    createSection("Iqama Info",[
+        ["Iqama Number","IQAMA NO."],
+        ["Issue Date","ISSUE DATE"],
+        ["Expiry Date","EXPIRY DATE"]
+    ]);
 
-createSection("Passport Information",[
-["Passport Number","PASSPORT NO"],
-["Place of Issue","PLACE OF ISSUE"],
-["Issue Date","PP-ISSUE DATE"],
-["Expiry Date","PP-EXPIRY DATE"]
-]);
+    createSection("Passport Info",[
+        ["Passport Number","PASSPORT NO"],
+        ["Place of Issue","PLACE OF ISSUE"],
+        ["Issue Date","PP-ISSUE DATE"],
+        ["Expiry Date","PP-EXPIRY DATE"]
+    ]);
 
-// ✅ Aramco ID Information
-createSection("Aramco ID Information",[
-["Badge no","BADGE NO."],
-["GP apply date","GP APPLY DATE"],
-["SA Req No.","SA REQ NO."],
-["Appointmentdate","APPOINTMENT DATE"],
-["ID office","ID OFFICE"],
-["SA ID ISSUE DATE","CARD ISSUE DATE"],
-["SA ID EXPIRY DATE","CARD EXPIRY DATE"],
-["ID Available","CARD WITH"]
-]);
-
+    createSection("Aramco ID Details",[
+        ["Badge no","BADGE NO."],
+        ["GP Apply","GP APPLY DATE"],
+        ["SA Req No.","SA REQ NO."],
+        ["Appt Date","APPOINTMENT DATE"],
+        ["ID office","ID OFFICE"],
+        ["Issue Date","CARD ISSUE DATE"],
+        ["Expiry Date","CARD EXPIRY DATE"],
+        ["ID Location","CARD WITH"]
+    ]);
 }
 
 window.onload=loadExcel;
 
 window.addEventListener('click',(e)=>{
-if(!e.target.closest('.search-wrapper')){
-suggestBox.style.display='none';
-}
+    if(!e.target.closest('.search-wrapper')){
+        suggestBox.style.display='none';
+    }
 });
-
 </script>
 
 </body>
